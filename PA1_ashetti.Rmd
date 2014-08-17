@@ -1,0 +1,38 @@
+---
+output: html_document
+---
+# Reproducible Research: Peer Assessment 1
+Lets first install the data.table package and load it. This package makes life easy for us later when summing up and creating time series plots
+```{r}
+library(data.table)
+```
+Now lets load up the data. We assume activity.zip is in our working directory.
+## Loading and preprocessing the data
+```{r}
+unzip("activity.zip")
+activity <- read.csv("activity.csv")
+ACTIVITY <- data.table(activity)
+setkey(ACTIVITY,date)
+```
+## What is mean total number of steps taken per day?
+```{r}
+stepsByDate <- ACTIVITY[,sum(steps,na.rm = TRUE),by=date];
+hist(x=stepsByDate$V1,plot=TRUE);
+sprintf("Mean steps = %.0f",mean(stepsByDate$V1));
+sprintf("Median steps = %.0f",median(stepsByDate$V1));
+```
+## What is the average daily activity pattern?
+```{r}
+stepsByInterval <- ACTIVITY[,mean(steps,na.rm=TRUE),by=interval]
+plot(x <- stepsByInterval$interval,y<- stepsByInterval$V1, type = "l",xlab = "Interval",ylab = "Steps")
+maxSteps <- max(stepsByInterval$V1)
+maxInterval <- stepsByInterval$interval[which.max(stepsByInterval$V1)]
+abline(v=maxInterval,col=3)
+axis(side=1,at=maxInterval,col=3)
+sprintf("Interval %.0f has the maximum average number of steps of %.0f",maxInterval,maxSteps)
+```
+## Imputing missing values
+
+
+
+## Are there differences in activity patterns between weekdays and weekends?
