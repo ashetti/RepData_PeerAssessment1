@@ -32,7 +32,27 @@ axis(side=1,at=maxInterval,col=3)
 sprintf("Interval %.0f has the maximum average number of steps of %.0f",maxInterval,maxSteps)
 ```
 ## Imputing missing values
-
-
-
+Lets use is.na to count missing values in the steps variable
+```{r}
+missingValues <- sum(is.na(ACTIVITY$steps))
+sprintf("There are %i missing values in the data set",missingValues)
+```
+Now lets use the mean for the interval to fill in missing values
+```{r}
+mVLogical <- is.na(ACTIVITY$steps)
+ACTIVITY2<-ACTIVITY
+for (i in 1:length(ACTIVITY2$steps)){
+  if (is.na(ACTIVITY2$steps[i])){
+    interval <- ACTIVITY2$interval[i]
+    ACTIVITY2$steps[i] <- stepsByInterval$V1[which(stepsByInterval$interval==interval)]
+  }
+}
+```
+Now lets compute mean total number of steps for new dataset with NA's filled in and also find mean and media for new data set
+```{r}
+stepsByDate2 <- ACTIVITY2[,sum(steps,na.rm = TRUE),by=date];
+hist(x=stepsByDate2$V1,plot=TRUE);
+sprintf("Mean steps = %.0f",mean(stepsByDate2$V1));
+sprintf("Median steps = %.0f",median(stepsByDate2$V1));
+```
 ## Are there differences in activity patterns between weekdays and weekends?
